@@ -41,11 +41,11 @@ Sibling paths are research locators only. Product execution cannot depend on tho
 | Nickel Export | `https://github.com/OnixResearch/nickel-export`, `257fafc1c746f1faf156207043a4c826bfb16d49` | Existing Cairn Nix pin. Declared input, evaluator, output, and freshness identities |
 | Cap Root | `rad:z3cWBCK7VPbEmbL5MAvKJWKjCE745`, `8991e2572578c16e590c2f1c0915db6c46c5d9cb` | Lexical relative-path and leaf admission. Cairn retains directory capabilities and no-follow I/O |
 | Durable File Publication | `rad:z3tAR4For7qw8ZirkJzoDw1VNDDLM`, `951c27f59003cea9bfdb40ed4d89653d50fada1f` | One-file publication. Cairn retains installation transactions, recovery, and ownership |
-| Bounded Exec | `rad:z2CpqLFpdP36fZXYUK5ZNWxMibpCo`, `29dac88ecded94457572db3fdfaaaab95fa91525` | Child-process limits and teardown, through its published Git source |
+| Bounded Exec | `https://github.com/OnixResearch/bounded-exec-public`, `ff4af395b2c415fddd1ed51f4829aeba2d4259a5` | Child-process limits and teardown, through its independent public source snapshot |
 | Kiln | `rad:z2wsvXm5S2sJGvuV1k5JHiwi1PbKE`, `5d99f4e9bb954743443e340baece31256b4c53f1` | CI candidate, attempt, provider, and result meaning. Cairn does not create another CI scheduler |
 | Lattice | `https://github.com/OnixResearch/lattice`, `70496e67c7fd4a8b05914161a8e09de2759bebc8` | `lattice-workflow-contract` and workflow observations through Kiln-owned execution |
 | Mantle | `https://github.com/OnixResearch/mantle`, `0bbab77e23ab95caa4e4184b9945cfaa5c8040e2` | `mantle-build-contract` and bounded build observations. Builds do not substitute for tests |
-| Octet | `https://github.com/OnixResearch/octet`, `890f424cd7b1b2015f39c0eb5747f1bd1e576028` | Source-analysis and checked-path evidence under the selected exact scope |
+| Historical producer (`octet` check key) | `https://github.com/OnixResearch/slotcar-public`, `e0d07898aafd26a307eb4c5579dbd0e7931f991b` | Slotcar source analysis under the preserved exact scope; not the newer Octet compiler |
 | Valence | `https://github.com/OnixResearch/valence`, `e40c76b4d2070a29636e00c85c0dff93f03dba2f` | Evidence identity, roles, linkage, spans, and non-claims |
 | Workspace dependency tools | Workspace root commit `22515fb7bc01d378312053d389d4bbdd55637a50` | `stack-deps` audit/reconciliation and `stack-doctor` saved observations. No source import into Cairn |
 

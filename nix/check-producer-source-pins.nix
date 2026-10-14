@@ -1,7 +1,7 @@
 { lib }:
 let
   expected = {
-    bounded-exec = "29dac88ecded94457572db3fdfaaaab95fa91525";
+    bounded-exec = "ff4af395b2c415fddd1ed51f4829aeba2d4259a5";
     durable-file-publication = "951c27f59003cea9bfdb40ed4d89653d50fada1f";
     mantle-build-contract = "0bbab77e23ab95caa4e4184b9945cfaa5c8040e2";
     kiln-core = "5d99f4e9bb954743443e340baece31256b4c53f1";

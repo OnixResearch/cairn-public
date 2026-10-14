@@ -4,7 +4,7 @@ const DIGEST_HEX_BYTES: usize = 64;
 const MAX_LABEL_BYTES: usize = 128;
 const ADJACENT_PAIR_LENGTH: usize = 2;
 
-pub const LOCAL_EXECUTOR_REVISION: &str = "29dac88ecded94457572db3fdfaaaab95fa91525";
+pub const LOCAL_EXECUTOR_REVISION: &str = "ff4af395b2c415fddd1ed51f4829aeba2d4259a5";
 pub const PROFILE_SCHEMA: &str = "cairn.check-profile.v1";
 pub const PLAN_SCHEMA: &str = "cairn.check-evidence-plan.v1";
 pub const MAX_CHECKS: usize = 64;

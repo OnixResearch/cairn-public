@@ -24,7 +24,7 @@ Use this Hermes skill for work in this Cairn repository. Cairn is the canonical 
 - Native lifecycle content lives under `.cairn/`.
 - Legacy lifecycle content is an explicit import/migration source, not a runtime fallback layout.
 - Fixtures live under `fixtures/` and are part of the behavior contract.
-- Pin the Octet input to an immutable `github:OnixResearch/octet/<revision>` source.
+- Pin the historical `octet` producer input to an immutable `github:OnixResearch/slotcar-public/<revision>` source; select its actual `cargo-slotcar` API, not the newer Octet compiler.
 - Run the CLI through Nix as `nix run path:$PWD#cairn -- ...`.
 
 ## Operating mode

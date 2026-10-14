@@ -3,19 +3,21 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.artifact = {
-    url = "git+ssh://git@github.com/OnixResearch/onix-artifact.git?rev=e41340bec587b6d049b5cc518ec7db925dde84be";
+    url = "git+https://github.com/OnixResearch/onix-artifact-public.git?rev=f379f2583b5d152cfd6d58919738652861793c90";
     flake = false;
   };
   inputs.nickel-export = {
     url = "github:OnixResearch/nickel-export/257fafc1c746f1faf156207043a4c826bfb16d49";
     inputs.nixpkgs.follows = "nixpkgs";
+    # Validation-only Cairn uses this assembly; no private historical closure.
+    inputs.cairn.follows = "";
   };
   # Exact stack Nickel 1.17.0 cohort, pinned to the reviewed upstream commit.
   # r[impl cairn.nickel_toolchain.cohort] r[impl cairn.nickel_toolchain.lockfile]
   inputs.nickel-1-17-0.url = "github:nickel-lang/nickel/1320a983e6c3d1e2fb53dd2464b084b4903b1426";
-  # Keep the existing producer revision while using its canonical repository.
+  # The historical octet input is the Slotcar producer, not the new compiler.
   # r[impl cairn.octet_integration.canonical] r[impl cairn.octet_integration.evidence]
-  inputs.octet.url = "github:OnixResearch/octet/2f8213a88781d9d38bb81319d06a50805d48ccd3";
+  inputs.octet.url = "github:OnixResearch/slotcar-public/e0d07898aafd26a307eb4c5579dbd0e7931f991b";
   inputs.kiln-core = {
     url = "git+https://seed.radicle.garden/z2wsvXm5S2sJGvuV1k5JHiwi1PbKE.git?rev=5d99f4e9bb954743443e340baece31256b4c53f1";
     flake = false;
@@ -25,7 +27,7 @@
     flake = false;
   };
   inputs.bounded-exec = {
-    url = "git+https://git.onix.computer/z2CpqLFpdP36fZXYUK5ZNWxMibpCo.git?rev=29dac88ecded94457572db3fdfaaaab95fa91525";
+    url = "git+https://github.com/OnixResearch/bounded-exec-public.git?rev=ff4af395b2c415fddd1ed51f4829aeba2d4259a5";
     flake = false;
   };
   inputs.cap-root = {
@@ -1004,7 +1006,7 @@
             pkgs.clippy
             (nickelCohort pkgs.stdenv.hostPlatform.system)
             nickel-export.packages.${pkgs.stdenv.hostPlatform.system}.nickel-export
-            octet.packages.${pkgs.stdenv.hostPlatform.system}.cargo-octet
+            octet.packages.${pkgs.stdenv.hostPlatform.system}.cargo-slotcar
           ];
         };
       });

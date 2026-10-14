@@ -110,7 +110,7 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 [[package]]
 name = "artifact-auth-core"
 version = "0.1.0"
-source = "git+ssh://git@github.com/OnixResearch/onix-artifact.git?rev=e41340bec587b6d049b5cc518ec7db925dde84be#e41340bec587b6d049b5cc518ec7db925dde84be"
+source = "git+https://github.com/OnixResearch/onix-artifact-public.git?rev=f379f2583b5d152cfd6d58919738652861793c90#f379f2583b5d152cfd6d58919738652861793c90"
 dependencies = [
  "blake3",
 ]
@@ -118,7 +118,7 @@ dependencies = [
 [[package]]
 name = "artifact-auth-ed25519"
 version = "0.1.0"
-source = "git+ssh://git@github.com/OnixResearch/onix-artifact.git?rev=e41340bec587b6d049b5cc518ec7db925dde84be#e41340bec587b6d049b5cc518ec7db925dde84be"
+source = "git+https://github.com/OnixResearch/onix-artifact-public.git?rev=f379f2583b5d152cfd6d58919738652861793c90#f379f2583b5d152cfd6d58919738652861793c90"
 dependencies = [
  "artifact-auth-core",
  "blake3",
@@ -274,7 +274,7 @@ dependencies = [
 [[package]]
 name = "bounded-exec"
 version = "0.1.0"
-source = "git+https://git.onix.computer/z2CpqLFpdP36fZXYUK5ZNWxMibpCo.git?rev=29dac88ecded94457572db3fdfaaaab95fa91525#29dac88ecded94457572db3fdfaaaab95fa91525"
+source = "git+https://github.com/OnixResearch/bounded-exec-public.git?rev=ff4af395b2c415fddd1ed51f4829aeba2d4259a5#ff4af395b2c415fddd1ed51f4829aeba2d4259a5"
 dependencies = [
  "bounded-exec-core",
  "nix 0.30.1",
@@ -283,7 +283,10 @@ dependencies = [
 [[package]]
 name = "bounded-exec-core"
 version = "0.1.0"
-source = "git+https://git.onix.computer/z2CpqLFpdP36fZXYUK5ZNWxMibpCo.git?rev=29dac88ecded94457572db3fdfaaaab95fa91525#29dac88ecded94457572db3fdfaaaab95fa91525"
+source = "git+https://github.com/OnixResearch/bounded-exec-public.git?rev=ff4af395b2c415fddd1ed51f4829aeba2d4259a5#ff4af395b2c415fddd1ed51f4829aeba2d4259a5"
+dependencies = [
+ "blake3",
+]
 
 [[package]]
 name = "bounded-tree-cap"
@@ -722,7 +725,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ccc2776f0c61eca1ca32528f85548abd1a4be8fb53d1b21c013e4f18da1e7090"
 dependencies = [
  "data-encoding",
- "syn 2.0.117",
+ "syn 1.0.109",
 ]
 
 [[package]]

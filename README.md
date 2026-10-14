@@ -31,10 +31,19 @@ inputs; license grants retain their stated scope, but neither makes edited
 documentation byte-identical historical evidence. Generate fresh release
 evidence against the exact published revision before making a release claim.
 
-The Mantle build-contract input uses anonymous HTTPS at the unchanged immutable
-revision `0bbab77e23ab95caa4e4184b9945cfaa5c8040e2`. Other historical private
-dependency coordinates still require approved public snapshot publication and
-repinning before this export has an anonymous-fetchable dependency closure.
+The active source assembly uses independent public Artifact, Bounded Exec, and
+historical Slotcar snapshots over anonymous HTTPS. Nickel-export's lifecycle
+input follows this Cairn assembly rather than retaining private historical
+Cairn/Slotcar inputs. Nickel remains exactly 1.17.0; public third-party, Kiln,
+Cap Root, Durable File Publication, and Mantle revisions are unchanged.
+
+The Artifact source is the independent base `f379f2583b5d152cfd6d58919738652861793c90`.
+Its release profile still truthfully names its historical repository; the source
+validator separately binds the public mirror URL, exact revision, NAR identity,
+package set, license, and unchanged authentication implementation hashes.
+This is source publication, not package/release admission. Builds, signed fixture
+replay, lifecycle completion, and release evidence require fresh observations
+against the exact assembly revision; historical reports do not establish them.
 
 ## Repository layout
 
@@ -67,8 +76,8 @@ Run Cairn from the public flake:
 
 ```bash
 export REPO=/path/to/your/repo
-nix run github:OnixResearch/cairn#cairn -- init --root "$REPO"
-nix run github:OnixResearch/cairn#cairn -- validate --root "$REPO"
+nix run github:OnixResearch/cairn-public#cairn -- init --root "$REPO"
+nix run github:OnixResearch/cairn-public#cairn -- validate --root "$REPO"
 ```
 
 Pin a tag or commit for repeatable automation.
@@ -147,7 +156,7 @@ nix run path:$PWD#cairn -- policy export --check
 cargo fmt --check
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
-nix develop -c cargo octet check --output-format json --artifact-dir artifacts/octet-run
+nix develop -c cargo slotcar check --output-format json --artifact-dir artifacts/slotcar-run
 nix build path:$PWD#checks.x86_64-linux.octet --no-link -L
 nix run path:$PWD#cairn -- validate --root .
 nix flake check path:$PWD -L
@@ -155,12 +164,16 @@ nix run path:$PWD#cairn -- doctor --root fixtures/basic
 nix run path:$PWD#cairn -- status --root fixtures/basic
 ```
 
-`nix flake check` covers policy freshness, formatting, tests, lifecycle checks, traceability, Clippy, Octet, and self-dogfood.
+`nix flake check` covers policy freshness, formatting, tests, lifecycle checks, traceability, Clippy, the historical Slotcar producer, and self-dogfood.
 
-The Octet input uses an immutable revision from `OnixResearch/octet`.
-`checks.<system>.octet-integration` verifies its source identity, canonical config, command, and consumer scope with positive and negative controls.
+The retained `octet` input/check key selects `OnixResearch/slotcar-public` at
+`e0d07898aafd26a307eb4c5579dbd0e7931f991b`, preserving the historical producer
+instead of upgrading to the newer Octet compiler. Use the producer's actual
+`cargo-slotcar` package and Slotcar config tables, not fallback aliases.
+`checks.<system>.octet-integration` verifies its immutable source identity,
+command, and full consumer scope with positive and negative controls.
 That integration check does not replace `checks.<system>.octet`, which runs the producer check.
-Historical receipts retain their original command text.
+Historical receipts retain their original command text and source identities.
 
 <!-- r[verify cairn.octet_integration.guidance] r[verify cairn.octet_integration.evidence] -->
 

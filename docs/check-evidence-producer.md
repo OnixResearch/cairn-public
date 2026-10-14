@@ -205,7 +205,7 @@ See [fixture provenance](../fixtures/check-evidence/README.md) for immutable rev
 
 | Dependency | Immutable revision | Imported scope | Public license |
 |---|---|---|---|
-| Bounded Exec | `29dac88ecded94457572db3fdfaaaab95fa91525` | `bounded-exec` and its core | AGPL-3.0-or-later |
+| Bounded Exec | `ff4af395b2c415fddd1ed51f4829aeba2d4259a5` (`OnixResearch/bounded-exec-public`) | `bounded-exec` and its core; independent public snapshot, unchanged runtime | AGPL-3.0-or-later |
 | Durable File Publication | `951c27f59003cea9bfdb40ed4d89653d50fada1f` | Published one-file crate and Linux adapter | MIT OR Apache-2.0 |
 | Mantle | `0bbab77e23ab95caa4e4184b9945cfaa5c8040e2` | `mantle-build-contract` only | AGPL-3.0-or-later |
 | Kiln | `5d99f4e9bb954743443e340baece31256b4c53f1` | `kiln-core` workflow admission and nominal values | MIT OR Apache-2.0 |
@@ -214,7 +214,7 @@ Cargo and Nix acquire complete pinned sources through their published Git transp
 No producer implementation is copied. Upstream source distributions retain their license and contributor notices.
 The owner-authorized reuse grant applies only to exclusively OnixResearch-owned material. It does not change public licenses or third-party rights.
 `nix/check-producer-source-pins.nix` checks matching Cargo/Nix revisions and rejects a substituted revision.
-The existing Octet/Slotcar compiler and check pin remains unchanged.
+The historical Slotcar producer now resolves through its independent public source export; its implementation and check scope remain unchanged, and the newer Octet compiler is not selected.
 
 The Lattice native fixture helper has a separate locked Cargo graph. Its producer requires BLAKE3 1.8.3 or later; Mantle requires exactly 1.8.2.
 The product JSON translator preserves the pinned Lattice framing without joining those dependency graphs.

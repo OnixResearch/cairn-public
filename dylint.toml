@@ -1,8 +1,8 @@
-# Consumer-owned Octet lint configuration.
-# The immutable flake input supplies Octet without a sibling checkout.
-# Run: nix develop -c cargo octet check
-# Keep the existing lint defaults during the canonical-name migration.
+# Consumer-owned historical Slotcar lint configuration.
+# The immutable historical producer snapshot supplies Slotcar without a sibling checkout.
+# Run: nix develop -c cargo slotcar check
+# This does not select the newer Octet compiler.
 
-[octet]
+[slotcar]
 
-[octet.lint_levels]
+[slotcar.lint_levels]
