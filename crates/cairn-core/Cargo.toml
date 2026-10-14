@@ -11,6 +11,7 @@ unexpected_cfgs = { level = "deny", check-cfg = ['cfg(dylint_lib, values("octet"
 [dependencies]
 artifact-auth-core.workspace = true
 blake3.workspace = true
+bs58.workspace = true
 iddqd.workspace = true
 kiln-core.workspace = true
 preserves.workspace = true

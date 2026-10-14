@@ -17,6 +17,7 @@ version = "0.1.0"
 artifact-auth-core = { git = "ssh://git@github.com/OnixResearch/onix-artifact.git", rev = "e41340bec587b6d049b5cc518ec7db925dde84be", default-features = false }
 artifact-auth-ed25519 = { git = "ssh://git@github.com/OnixResearch/onix-artifact.git", rev = "e41340bec587b6d049b5cc518ec7db925dde84be", default-features = false }
 blake3 = "1.5"
+bs58 = { version = "0.5", default-features = false }
 bounded-exec = { git = "https://git.onix.computer/z2CpqLFpdP36fZXYUK5ZNWxMibpCo.git", rev = "29dac88ecded94457572db3fdfaaaab95fa91525" }
 bounded-tree-core = { path = "vendor/bounded-tree-core" }
 bounded-tree-cap = { path = "vendor/bounded-tree-cap" }

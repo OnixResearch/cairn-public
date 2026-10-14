@@ -242,9 +242,9 @@ fn validate_snapshot_context(
             limit: super::radicle_change::MAX_ACTOR_ID_BYTES,
         });
     }
-    let actor = super::nominal_identity::ActorId::parse(&snapshot.actor, "update.actor")
+    let actor = super::collaboration_change::ActorRef::parse(&snapshot.actor, "update.actor")
         .map_err(nominal_error)?;
-    let creator = super::nominal_identity::ActorId::parse(&state.creator, "update.creator")
+    let creator = super::collaboration_change::ActorRef::parse(&state.creator, "update.creator")
         .map_err(nominal_error)?;
     if actor != creator && !snapshot.is_delegate {
         return Err(super::radicle_change::ChangeCobError::Unauthorized {

@@ -10,27 +10,75 @@ pub const BASE_REVISION_KIND_GIT_OID: &str = "git_oid";
 pub type Evidence = super::radicle_change::ChangeCobEvidence;
 pub type Error = super::radicle_change::ChangeCobError;
 
-#[derive(Debug)]
-struct AdmittedInit {
-    change_id: super::nominal_identity::ChangeId,
-    workspace_id: super::nominal_identity::WorkspaceId,
-    policy_hash: super::nominal_identity::PolicyDigest,
-    delegates: std::collections::BTreeSet<super::nominal_identity::ActorId>,
+const ED25519_MULTICODEC: [u8; 2] = [0xed, 0x01];
+const ED25519_ACTOR_BYTES: usize = ED25519_MULTICODEC.len() + 32;
+// r[impl cairn.collaboration_backend.native_actors]
+
+// Portable labels and canonical native signing keys remain distinct wire IDs.
+// Admission establishes syntax only; signature and delegate checks stay in the adapter.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) struct ActorRef<'a> {
+    value: &'a str,
+}
+
+impl<'a> ActorRef<'a> {
+    pub(super) fn parse(
+        value: &'a str,
+        field: &'static str,
+    ) -> Result<Self, super::nominal_identity::IdentityIssue> {
+        if let Some(encoded) = value.strip_prefix('z') {
+            if value.len() > super::radicle_change::MAX_ACTOR_ID_BYTES {
+                return Err(super::nominal_identity::IdentityIssue::new(
+                    field,
+                    "identity_oversized",
+                ));
+            }
+            let mut decoded = [0; ED25519_ACTOR_BYTES];
+            // Exact length and codec reject leading-zero aliases; base58 is otherwise unique.
+            if !matches!(
+                bs58::decode(encoded).onto(&mut decoded[..]),
+                Ok(ED25519_ACTOR_BYTES)
+            ) || decoded[..ED25519_MULTICODEC.len()] != ED25519_MULTICODEC
+            {
+                return Err(super::nominal_identity::IdentityIssue::new(
+                    field,
+                    "identity_signing_key_invalid",
+                ));
+            }
+        } else {
+            super::nominal_identity::DomainIdRef::<super::nominal_identity::ActorIdRole>::parse(
+                value, field,
+            )?;
+        }
+        Ok(Self { value })
+    }
+
+    fn as_str(self) -> &'a str {
+        self.value
+    }
 }
 
 #[derive(Debug)]
-struct AdmittedOperation {
+struct AdmittedInit<'a> {
+    change_id: super::nominal_identity::ChangeId,
+    workspace_id: super::nominal_identity::WorkspaceId,
+    policy_hash: super::nominal_identity::PolicyDigest,
+    delegates: std::collections::BTreeSet<ActorRef<'a>>,
+}
+
+#[derive(Debug)]
+struct AdmittedOperation<'a> {
     id: super::nominal_identity::OperationId,
-    actor: super::nominal_identity::ActorId,
+    actor: ActorRef<'a>,
 }
 
 #[derive(Debug)]
-struct AdmittedState {
+struct AdmittedState<'a> {
     change_id: super::nominal_identity::ChangeId,
     workspace_id: super::nominal_identity::WorkspaceId,
     policy_hash: super::nominal_identity::PolicyDigest,
-    creator: super::nominal_identity::ActorId,
-    delegates: std::collections::BTreeSet<super::nominal_identity::ActorId>,
+    creator: ActorRef<'a>,
+    delegates: std::collections::BTreeSet<ActorRef<'a>>,
     operations: std::collections::BTreeSet<super::nominal_identity::OperationId>,
 }
 
@@ -267,7 +315,7 @@ fn operation_into_compatibility(
     enforce_nominal: bool,
 ) -> Result<super::radicle_change::ChangeCobOperation, Error> {
     let identities = if enforce_nominal {
-        Some(admit_operation(&operation)?)
+        Some(admit_operation(&operation.id, &operation.actor)?)
     } else {
         None
     };
@@ -353,7 +401,7 @@ fn init_to_compatibility(init: Init) -> Result<super::radicle_change::ChangeCobI
     })
 }
 
-fn admit_collaboration_init(init: &Init) -> Result<AdmittedInit, Error> {
+fn admit_collaboration_init(init: &Init) -> Result<AdmittedInit<'_>, Error> {
     Ok(AdmittedInit {
         change_id: super::nominal_identity::ChangeId::parse(
             &init.change_id,
@@ -375,19 +423,15 @@ fn admit_collaboration_init(init: &Init) -> Result<AdmittedInit, Error> {
     })
 }
 
-fn admit_operation(operation: &Operation) -> Result<AdmittedOperation, Error> {
+fn admit_operation<'a>(id: &str, actor: &'a str) -> Result<AdmittedOperation<'a>, Error> {
     Ok(AdmittedOperation {
-        id: super::nominal_identity::OperationId::parse(
-            &operation.id,
-            "collaboration.operation_id",
-        )
-        .map_err(nominal_error)?,
-        actor: super::nominal_identity::ActorId::parse(&operation.actor, "collaboration.actor_id")
+        id: super::nominal_identity::OperationId::parse(id, "collaboration.operation_id")
             .map_err(nominal_error)?,
+        actor: ActorRef::parse(actor, "collaboration.actor_id").map_err(nominal_error)?,
     })
 }
 
-fn admit_collaboration_state(state: &State) -> Result<AdmittedState, Error> {
+fn admit_collaboration_state(state: &State) -> Result<AdmittedState<'_>, Error> {
     Ok(AdmittedState {
         change_id: super::nominal_identity::ChangeId::parse(
             &state.change_id,
@@ -405,8 +449,7 @@ fn admit_collaboration_state(state: &State) -> Result<AdmittedState, Error> {
             "collaboration.policy_hash",
         )
         .map_err(nominal_error)?,
-        creator: super::nominal_identity::ActorId::parse(&state.creator, "collaboration.creator")
-            .map_err(nominal_error)?,
+        creator: ActorRef::parse(&state.creator, "collaboration.creator").map_err(nominal_error)?,
         delegates: admit_actor_set(&state.delegates, "collaboration.delegates")?,
         operations: state
             .operations
@@ -419,13 +462,13 @@ fn admit_collaboration_state(state: &State) -> Result<AdmittedState, Error> {
     })
 }
 
-fn admit_actor_set(
-    values: &std::collections::BTreeSet<String>,
+fn admit_actor_set<'a>(
+    values: &'a std::collections::BTreeSet<String>,
     field: &'static str,
-) -> Result<std::collections::BTreeSet<super::nominal_identity::ActorId>, Error> {
+) -> Result<std::collections::BTreeSet<ActorRef<'a>>, Error> {
     values
         .iter()
-        .map(|value| super::nominal_identity::ActorId::parse(value, field).map_err(nominal_error))
+        .map(|value| ActorRef::parse(value, field).map_err(nominal_error))
         .collect()
 }
 
@@ -467,6 +510,8 @@ mod tests {
     const ACTOR: &str = "actor:example";
     const ROOT_OPERATION: &str = "operation:root";
     const LEGACY_GIT_OID: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    const SIGNING_CREATOR: &str = "z6Mkg49NtQR2LyYRDCQFK4w1VVHqhypZSSRo7HsyuN7SV7v5";
+    const SIGNING_DELEGATE: &str = "z6MkvHHbrGisC4BxN9M8b95EdXTidoFjeRE3i7Qc355d6yqU";
 
     fn neutral_init() -> Init {
         Init::new(
@@ -617,5 +662,167 @@ mod tests {
         assert!(value["state"].get("base_revision").is_some());
         assert!(value.to_string().find("radicle").is_none());
         assert!(value.to_string().find("base_git_oid").is_none());
+    }
+
+    fn signing_state() -> State {
+        initialize_change_collaboration(Operation {
+            id: ROOT_OPERATION.to_string(),
+            actor: SIGNING_CREATOR.to_string(),
+            is_delegate: false,
+            actions: vec![Action::Init {
+                state: neutral_init()
+                    .with_delegates(BTreeSet::from([SIGNING_DELEGATE.to_string()])),
+            }],
+        })
+        .unwrap()
+    }
+
+    // r[verify cairn.collaboration_backend.native_actors.accepted]
+    // r[verify cairn.collaboration_backend.native_actors.authority]
+    #[test]
+    fn native_signers_update_and_resolve_without_granting_label_authority() {
+        let update_snapshot =
+            |actor: &str, is_delegate| super::super::collaboration_update::Snapshot {
+                change_id: CHANGE_ID.to_string(),
+                policy_hash: POLICY_HASH.to_string(),
+                actor: actor.to_string(),
+                is_delegate,
+                proposal: Some("# Native update\n".to_string()),
+                design: None,
+                tasks: None,
+                metadata: None,
+                delta_specs: std::collections::BTreeMap::new(),
+            };
+        let mut state = signing_state();
+        let update = super::super::collaboration_update::build_plan(
+            &state,
+            update_snapshot(SIGNING_CREATOR, false),
+        )
+        .unwrap();
+        state = super::super::collaboration_update::apply(&state, &update).unwrap();
+        assert!(materialize_change_collaboration(&state)
+            .unwrap()
+            .iter()
+            .any(|file| { file.path == "proposal.md" && file.content == "# Native update\n" }));
+
+        let proposal = super::super::radicle_change::ChangeArtifactId::proposal();
+        let basis = state.artifacts.get(&proposal).unwrap().head_ids();
+        for (id, actor, is_delegate, content) in [
+            ("operation:left", SIGNING_CREATOR, false, "# Native left\n"),
+            (
+                "operation:right",
+                SIGNING_DELEGATE,
+                true,
+                "# Native right\n",
+            ),
+        ] {
+            apply_change_collaboration_operation(
+                &mut state,
+                Operation {
+                    id: id.to_string(),
+                    actor: actor.to_string(),
+                    is_delegate,
+                    actions: vec![Action::SetArtifact {
+                        artifact: proposal.clone(),
+                        content: Some(content.to_string()),
+                        basis: basis.clone(),
+                    }],
+                },
+            )
+            .unwrap();
+        }
+        assert!(matches!(
+            materialize_change_collaboration(&state),
+            Err(Error::ArtifactConflict { .. })
+        ));
+        let resolution_snapshot =
+            |actor: &str, is_delegate| super::super::collaboration_resolution::Snapshot {
+                change_id: CHANGE_ID.to_string(),
+                policy_hash: POLICY_HASH.to_string(),
+                actor: actor.to_string(),
+                is_delegate,
+                artifact_selections: vec![
+                    super::super::collaboration_resolution::ChangeArtifactHeadSelection {
+                        artifact: proposal.clone(),
+                        revision_id: "operation:left".to_string(),
+                    },
+                ],
+                lifecycle_status: None,
+            };
+        for actor in [ACTOR, SIGNING_DELEGATE] {
+            assert!(matches!(
+                super::super::collaboration_update::build_plan(
+                    &state,
+                    update_snapshot(actor, false)
+                ),
+                Err(Error::Unauthorized { .. })
+            ));
+            assert!(matches!(
+                super::super::collaboration_resolution::plan(
+                    &state,
+                    resolution_snapshot(actor, false)
+                ),
+                Err(Error::Unauthorized { .. })
+            ));
+        }
+        let resolution = super::super::collaboration_resolution::plan(
+            &state,
+            resolution_snapshot(SIGNING_DELEGATE, true),
+        )
+        .unwrap();
+        let resolved = super::super::collaboration_resolution::apply(&state, &resolution).unwrap();
+        assert!(materialize_change_collaboration(&resolved)
+            .unwrap()
+            .iter()
+            .any(|file| { file.path == "proposal.md" && file.content == "# Native left\n" }));
+    }
+
+    // r[verify cairn.collaboration_backend.native_actors.rejected]
+    #[test]
+    fn malformed_native_actors_cannot_initialize_or_validate_collaboration() {
+        let encode = |bytes: &[u8]| {
+            let mut encoded = [0; 64];
+            let count = bs58::encode(bytes).onto(&mut encoded[..]).unwrap();
+            format!("z{}", std::str::from_utf8(&encoded[..count]).unwrap())
+        };
+        let mut payload = [0; ED25519_ACTOR_BYTES + 1];
+        payload[..ED25519_MULTICODEC.len()].copy_from_slice(&ED25519_MULTICODEC);
+        let mut wrong_codec = [0; ED25519_ACTOR_BYTES];
+        wrong_codec[..ED25519_MULTICODEC.len()].copy_from_slice(&[0xec, 0x01]);
+        for actor in [
+            "z0".to_string(),
+            format!("z1{}", &SIGNING_CREATOR[1..]),
+            encode(&wrong_codec),
+            encode(&payload[..ED25519_ACTOR_BYTES - 1]),
+            encode(&payload),
+            format!(
+                "z{}",
+                "1".repeat(super::super::radicle_change::MAX_ACTOR_ID_BYTES)
+            ),
+        ] {
+            assert!(matches!(
+                initialize_change_collaboration(Operation {
+                    id: ROOT_OPERATION.to_string(),
+                    actor,
+                    is_delegate: false,
+                    actions: vec![Action::Init {
+                        state: neutral_init()
+                    }],
+                }),
+                Err(Error::InvalidField { .. })
+            ));
+        }
+        assert!(matches!(
+            validate_change_collaboration_init(
+                &neutral_init().with_delegates(BTreeSet::from([encode(&wrong_codec)]))
+            ),
+            Err(Error::InvalidField { .. })
+        ));
+        let mut state = signing_state();
+        state.creator = encode(&wrong_codec);
+        assert!(matches!(
+            validate_change_collaboration_state(&state),
+            Err(Error::InvalidField { .. })
+        ));
     }
 }
