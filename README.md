@@ -387,6 +387,8 @@ The `radicle-cob.v1` adapter uses an explicit Git repository and keystore. It do
 
 The local COB Git storage and explicit signer loader come from the commit-pinned, in-repository `onix-radicle-cob-git-store` vendor package. Cairn continues to own reducers, authority, locks, and receipts. See [the source pin, archive digest, and import procedure](docs/radicle-cob-git-store-adoption.md); this local source import is not a published transport or remote.
 
+Collaboration actor admission accepts portable `actor:` labels and canonical `z`-prefixed base58-btc Ed25519 public keys. A native key must decode to the Ed25519 multicodec and exactly 32 public-key bytes; its original spelling stays unchanged in state, comparisons, and hashes. Syntax admission does not authenticate a signer, infer delegate membership, or alias a portable label to a native key.
+
 ```bash
 cairn collaboration import my-change \
   --backend radicle-cob.v1 \

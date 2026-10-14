@@ -15,4 +15,6 @@ The permissive core and gate contract must not depend on `cairn-cli`. The CLI ma
 
 Complete texts are in `LICENSES/MIT.txt`, `LICENSES/Apache-2.0.txt`, and `LICENSES/AGPL-3.0-or-later.txt`. Each Cargo package directory carries the applicable text so package archives are self-contained.
 
+`tools/check-license-boundary.rs` applies `license-policy.tsv` to package metadata and required license artifacts. The inventory binds the policy grant to its five named historical path/blob records and explicit CLI/toolchain/other-content exclusions. These text and metadata checks do not establish copyright ownership or the legal validity of a grant.
+
 Prior grants remain valid. This map is distribution metadata; it does not establish contributor authority, legal compliance, source correctness, lifecycle acceptance, or release eligibility.

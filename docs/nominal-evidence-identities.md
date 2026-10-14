@@ -19,7 +19,8 @@ Rust owns identity parsing, typed admission, comparisons, and deterministic diag
 | Raw value | Classification | Typed role | Core scope | Wire compatibility |
 |---|---|---|---|---|
 | change, workspace, archive | domain ID | `ChangeId`, `WorkspaceId`, `ArchiveId` | lifecycle and collaboration plans | stable CLI and collaboration fields |
-| actor, operation | domain ID or reference | `ActorId`, `OperationId` | collaboration transitions | portable and COB envelopes |
+| actor | domain ID or native wire identity | private borrowed collaboration actor view; `ActorId` for portable `actor:` labels | collaboration transitions | portable labels and canonical native Ed25519 keys retain exact spellings |
+| operation | domain ID | `OperationId` | collaboration transitions | portable and COB envelopes |
 | policy, input, plan | BLAKE3 role | `PolicyDigest`, `InputDigest`, `PlanDigest` | gates, replay, and mutation plans | stable receipt hash fields |
 | receipt, chain, ledger | BLAKE3 role | `ReceiptDigest`, `ChainDigest`, `LedgerDigest` | evidence and operation chains | stable receipt and ledger fields |
 | state, content root | BLAKE3 role | `StateDigest`, `ContentRootDigest` | collaboration and mutation checks | stable state envelopes |
@@ -42,6 +43,8 @@ The private fields prevent unchecked construction. The types do not implement `D
 ## Compatibility
 
 Public DTO fields remain strings. Typed values exist only after admission, so valid JSON and receipt hash material remain unchanged.
+
+Collaboration admission checks native base58-btc Ed25519 actors without widening the portable `ActorId` grammar or other nominal roles. It preserves their wire bytes and does not establish signer authority or delegate membership.
 
 Compatibility adapters can accept an existing uppercase digest where the old boundary permits it. The typed core always stores lowercase hexadecimal text.
 

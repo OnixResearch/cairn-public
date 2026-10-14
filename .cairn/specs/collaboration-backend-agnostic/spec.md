@@ -83,3 +83,24 @@ r[cairn.collaboration_backend.non_claims.provider]
 - GIVEN equivalent neutral state is observed through a supported provider
 - WHEN Cairn reports status or checkout
 - THEN provider-specific object, signature, or authority facts remain adapter observations rather than semantic lifecycle proof
+
+### Requirement: Canonical native collaboration actors
+r[cairn.collaboration_backend.native_actors] The system MUST admit existing portable `actor:` labels and canonical base58-btc multibase Ed25519 public-key identities at collaboration initialization, delegate, operation, state, update, and resolution boundaries, preserving their exact wire spellings without weakening other nominal identity roles.
+
+#### Scenario: Native creators and delegates complete transitions
+r[cairn.collaboration_backend.native_actors.accepted]
+- GIVEN canonical native Ed25519 actor identities and independently admitted creator or delegate authority
+- WHEN Cairn initializes, updates, inspects conflicts, resolves selected heads, and materializes collaboration state
+- THEN those transitions accept the native identities and preserve exact selected artifact content and original actor wire identities
+
+#### Scenario: Malformed signing identities are rejected
+r[cairn.collaboration_backend.native_actors.rejected]
+- GIVEN a native actor spelling with an invalid base58 alphabet, wrong multicodec, non-32-byte public-key payload, leading-zero alias, or exceeded actor byte bound
+- WHEN the collaboration boundary admits that actor
+- THEN admission fails without producing a valid operation or trusted state
+
+#### Scenario: Syntax is not authority
+r[cairn.collaboration_backend.native_actors.authority]
+- GIVEN a native creator and an actor that is neither that exact creator nor admitted with delegate authority, including a valid portable actor label
+- WHEN that actor requests update or conflict resolution
+- THEN the request is unauthorized and no authorized plan is produced; syntax admission MUST NOT authenticate a signer, infer delegate membership, or alias a portable label to a native key
