@@ -1,0 +1,69 @@
+{
+  "actions": [],
+  "blocked": true,
+  "change": "missing",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "db590aa05b790925fdf986f022250368d1d39b2a83586461571de4946c808d37",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "c8276321e0e82c524e09ad9357fa48a9d38ac8590263ee6f79c51a328dc6037d",
+    "receipt_hash": "a904c2e684f22844da630261b04dcd4f165f82816b2d7612b88f0099fedec311",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "fixtures/missing-artifacts/.cairn/changes/missing/specs/demo/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "a48ee1b31b5e7db80b3b94c2919ba8f195d41db4df747a888de719946e46e294",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "d692bb2f563c6a8bceb6f8bf2e996b5ca83f606e4561045acef183e1006402d5",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "955cf3001768246f8a989dcd7792271b38d849dae791e484a93b4b2e00d10b76",
+        "destination": ".cairn/specs/demo/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "f374c9bb541461cb167851b2e670e1ff641ccb5b7f573431bdd692d4c679fb04",
+        "operations": [
+          {
+            "block_hash": "48b1b97426e4f7cda988d3af0d1c6ebf0d3edf4a84f0e24c474a30158420c035",
+            "heading": "### Requirement: Missing-artifact behavior",
+            "kind": "added",
+            "requirement_id": "demo.missing_artifact"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "demo.missing_artifact",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/missing/specs/demo/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "a7307e1f699782bd9c7c14a18db2bd5883ff8c73c731e2287bb62a7befc9393d",
+  "policy": "cairn-default",
+  "policy_hash": "c8276321e0e82c524e09ad9357fa48a9d38ac8590263ee6f79c51a328dc6037d",
+  "reasons": [
+    "missing: missing proposal.md",
+    "missing: missing tasks.md"
+  ],
+  "receipt_hash": "4923ae7fd83a0cae568da361757e4c4b44454239618fb940b27538b2290deb8a"
+}

@@ -1,0 +1,50 @@
+## Phase 1: Contract package
+
+- [x] [serial] I1 Define the native Cairn proposal/design/spec package for content-addressed Rust evidence. r[content_addressed_rust_evidence.function_object] r[content_addressed_rust_evidence.canonical_hash]
+- [x] [serial] V1 Run Cairn validation and proposal/design/tasks gates for this change package. r[content_addressed_rust_evidence.function_object.source_token]
+
+## Phase 2: Function object receipt implementation
+
+- [x] [serial] I2 Add Cairn receipt model support for Octet function-object v1 validation, including canonical hash material, normalization metadata, and required non-correctness claims. r[content_addressed_rust_evidence.function_object] r[content_addressed_rust_evidence.canonical_hash]
+- [x] [parallel] H1 Add deterministic fixture objects for portable canonical hashing and ambient-entropy rejection. command=`nix run path:$PWD#cairn -- validate --root .`; input=`fixtures/content-addressed-rust-evidence/function-object-v1/`; asserts=`portable object hashes match and entropy-bearing hash material fails closed`; evidence=`target/content-addressed-rust-evidence/function-object-v1-validation.json` r[content_addressed_rust_evidence.canonical_hash.portable] r[content_addressed_rust_evidence.canonical_hash.no_entropy]
+- [x] [serial] V2 Verify function-object receipt validation with positive and negative fixtures. r[content_addressed_rust_evidence.function_object.no_correctness_claim]
+
+## Phase 3: Pointer and caveat contracts
+
+- [x] [serial] I3 Add receipt validation for name-pointer creation, movement, rollback, drift, and deterministic mutation manifests. command=`nix run path:$PWD#cairn -- evidence name-pointer validate fixtures/content-addressed-rust-evidence/pointers-and-caveats/pointer-move.json`; asserts=`pointer movement records old/new hashes, reason, diff summary, rollback handle, and sorted touched-file hashes`; evidence=`target/content-addressed-rust-evidence/pointers-and-caveats-validation.json` r[content_addressed_rust_evidence.name_pointer] r[content_addressed_rust_evidence.export_bundle.mutation_manifest]
+- [x] [parallel] I4 Add closed caveat vocabularies for dependency identity status, macro/generated-code status, and coarse effect/capability summaries. command=`nix run path:$PWD#cairn -- evidence name-pointer validate fixtures/content-addressed-rust-evidence/pointers-and-caveats/unknown-effect-pure-cache.json`; asserts=`unknown effects fail closed instead of allowing pure-cache eligibility`; evidence=`target/content-addressed-rust-evidence/pointers-and-caveats-validation.json` r[content_addressed_rust_evidence.caveats]
+- [x] [parallel] H2 Add pointer and caveat fixture receipts. command=`nix run path:$PWD#cairn -- validate --root .`; input=`fixtures/content-addressed-rust-evidence/pointers-and-caveats/`; asserts=`pointer move records old/new/rollback fields and unknown effects block pure-cache eligibility`; evidence=`target/content-addressed-rust-evidence/pointers-and-caveats-validation.json` r[content_addressed_rust_evidence.name_pointer.move] r[content_addressed_rust_evidence.name_pointer.drift] r[content_addressed_rust_evidence.caveats.effects_fail_closed]
+- [x] [serial] V3 Verify pointer/caveat receipt behavior and mutation-manifest determinism. command=`nix develop -c cargo test -p cairn-cli name_pointer_evidence_validator -- --nocapture`; asserts=`positive movement fixture passes and drift/unknown-effect fixtures fail with deterministic issue codes`; evidence=`target/content-addressed-rust-evidence/pointers-and-caveats-validation.json` r[content_addressed_rust_evidence.caveats.dependency_status]
+
+## Phase 4: IR and bundle contracts
+
+- [x] [serial] I5 Add supplemental compiler-IR evidence validation fields for HIR and MIR summaries, with exact rustc/toolchain and extractor identity. command=`nix run path:$PWD#cairn -- evidence export-bundle validate fixtures/content-addressed-rust-evidence/ir-and-bundles/export-bundle-positive.json`; asserts=`HIR records toolchain-scoped resolved dependency status and MIR records toolchain-coupled summary status`; evidence=`target/content-addressed-rust-evidence/ir-and-bundles-validation.json` r[content_addressed_rust_evidence.compiler_ir]
+- [x] [serial] I6 Add export-bundle receipt validation for sorted object membership, pointer references, bundle hash, replay metadata, and mutation manifests. command=`nix run path:$PWD#cairn -- evidence export-bundle validate fixtures/content-addressed-rust-evidence/ir-and-bundles/export-bundle-positive.json`; asserts=`bundle hash validates, objects are sorted, pointer references target present object hashes, replay metadata exists, and mutation manifest entries are safe/sorted`; evidence=`target/content-addressed-rust-evidence/ir-and-bundles-validation.json` r[content_addressed_rust_evidence.export_bundle]
+- [x] [parallel] H3 Add IR and bundle fixture receipts. command=`nix run path:$PWD#cairn -- validate --root .`; input=`fixtures/content-addressed-rust-evidence/ir-and-bundles/`; asserts=`HIR dependencies are toolchain-scoped, MIR summaries are compiler-coupled, bundle membership is replayable, unsorted objects fail, and unknown pointer references fail`; evidence=`target/content-addressed-rust-evidence/ir-and-bundles-validation.json` r[content_addressed_rust_evidence.compiler_ir.hir_dependencies] r[content_addressed_rust_evidence.compiler_ir.mir_coupled] r[content_addressed_rust_evidence.export_bundle.replay]
+- [x] [serial] V4 Verify compiler-IR and export-bundle receipt behavior with positive and negative fixtures. command=`nix develop -c cargo test -p cairn-cli export_bundle_evidence_validator -- --nocapture`; asserts=`positive bundle passes and unsorted/unknown-pointer fixtures fail with deterministic issue codes`; evidence=`target/content-addressed-rust-evidence/ir-and-bundles-validation.json` r[content_addressed_rust_evidence.export_bundle.mutation_manifest]
+
+## Phase 5: Downstream pilots
+
+- [x] [serial] I7 Add bounded Crunch/Mantle evidence-object pilot validation for checker hash, input evidence hash, and bounded claim class. command=`nix run path:$PWD#cairn -- evidence downstream-pilot validate fixtures/content-addressed-rust-evidence/downstream-pilots/crunch-mantle-positive.json`; asserts=`Crunch/Mantle pilot records checker and input evidence hashes plus checker-evidence-linkage claim class`; evidence=`target/content-addressed-rust-evidence/downstream-pilots-validation.json` r[content_addressed_rust_evidence.downstream_pilots.crunch]
+- [x] [serial] I8 Add bounded Aspen CI/job-object pilot validation for config/source/executor identity and replay/cache key material. command=`nix run path:$PWD#cairn -- evidence downstream-pilot validate fixtures/content-addressed-rust-evidence/downstream-pilots/aspen-ci-positive.json`; asserts=`Aspen CI pilot records config/source/executor hashes plus replay/cache key material`; evidence=`target/content-addressed-rust-evidence/downstream-pilots-validation.json` r[content_addressed_rust_evidence.downstream_pilots.aspen]
+- [x] [parallel] H4 Add downstream pilot fixture receipts. command=`nix develop -c cargo test -p cairn-cli downstream_pilot_evidence_validator -- --nocapture`; input=`fixtures/content-addressed-rust-evidence/downstream-pilots/`; asserts=`Crunch and Aspen pilot receipts record identity material and explicit non-claims while overclaims fail closed`; evidence=`target/content-addressed-rust-evidence/downstream-pilots-validation.json` r[content_addressed_rust_evidence.downstream_pilots]
+- [x] [serial] V5 Run full validation, Tracey coverage, and archive readiness after implementation tasks complete. command=`nix develop -c cargo fmt --check && nix develop -c cargo clippy --workspace --all-targets -- -D warnings && nix develop -c cargo test --workspace && nix run path:$PWD#cairn -- validate --root . && nix run path:$PWD#cairn -- tracey coverage --root . && nix run path:$PWD#cairn -- gate tasks content-addressed-rust-evidence --root . && nix develop -c cargo tigerstyle check -p cairn-core -- --lib && git diff --check`; asserts=`all content-addressed receipt families and downstream pilots validate, Tracey coverage is complete, and task gate passes`; evidence=`local V5 gate transcript` r[content_addressed_rust_evidence.downstream_pilots.crunch] r[content_addressed_rust_evidence.downstream_pilots.aspen]
+
+## Verification Coverage
+
+| Scenario | Verification |
+| --- | --- |
+| r[content_addressed_rust_evidence.function_object.source_token] | V1, V2 |
+| r[content_addressed_rust_evidence.function_object.no_correctness_claim] | V2 |
+| r[content_addressed_rust_evidence.canonical_hash.portable] | H1, V2 |
+| r[content_addressed_rust_evidence.canonical_hash.no_entropy] | H1, V2 |
+| r[content_addressed_rust_evidence.name_pointer.move] | H2, V3 |
+| r[content_addressed_rust_evidence.name_pointer.drift] | H2, V3 |
+| r[content_addressed_rust_evidence.caveats.dependency_status] | V3 |
+| r[content_addressed_rust_evidence.caveats.effects_fail_closed] | H2, V3 |
+| r[content_addressed_rust_evidence.compiler_ir.hir_dependencies] | H3, V4 |
+| r[content_addressed_rust_evidence.compiler_ir.mir_coupled] | H3, V4 |
+| r[content_addressed_rust_evidence.export_bundle.replay] | H3, V4 |
+| r[content_addressed_rust_evidence.export_bundle.mutation_manifest] | I3, V4 |
+| r[content_addressed_rust_evidence.downstream_pilots.crunch] | I7, H4, V5 |
+| r[content_addressed_rust_evidence.downstream_pilots.aspen] | I8, H4, V5 |

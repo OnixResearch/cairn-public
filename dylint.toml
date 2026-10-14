@@ -1,0 +1,8 @@
+# Consumer-owned Octet lint configuration.
+# The immutable flake input supplies Octet without a sibling checkout.
+# Run: nix develop -c cargo octet check
+# Keep the existing lint defaults during the canonical-name migration.
+
+[octet]
+
+[octet.lint_levels]
