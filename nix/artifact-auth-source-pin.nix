@@ -18,7 +18,11 @@ let
     ed25519Package
   ];
   sourcePackageNames = consumerPackageNames ++ [ transferPackage ];
-  expectedWorkspaceMembers = map (packageName: "crates/${packageName}") sourcePackageNames;
+  # The frozen release profile admits three packages; the source workspace also
+  # contains binding-core, which remains outside the Cairn consumer graph.
+  expectedWorkspaceMembers = map (packageName: "crates/${packageName}") (
+    sourcePackageNames ++ [ "artifact-binding-core" ]
+  );
   expectedConsumerPackageCount = builtins.length consumerPackageNames;
   expectedCargoSource = "git+${expectedRepository}?rev=${expectedRevision}#${expectedRevision}";
   nixInputNode = "artifact";

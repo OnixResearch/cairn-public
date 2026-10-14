@@ -6,6 +6,8 @@ Cairn's dedicated `public-source-assembly-2026-10-14` worktree starts at public 
 
 Artifact is non-flake public base `f379f2583b5d152cfd6d58919738652861793c90` with observed NAR `sha256-dTexT+CcfyYZLtA1c8K41Z1rjJh/sewlNuDSQssKNm8=`. Its historical profile repository is deliberately preserved and validated separately from the public Git transport. Authentication source hashes, two-package consumer graph, licenses, publish restrictions, profile and drift rejection remain enforced.
 
+The source workspace has exactly four members: `artifact-auth-core`, `artifact-auth-ed25519`, `artifact-binding-core`, and `artifact-transfer-core`. The frozen release profile still lists its original three packages, excluding `artifact-binding-core`; the Cairn consumer lock still admits exactly the two authentication packages. These three exact sets are validated separately rather than equating release admission with source presence.
+
 Bounded Exec selects `ff4af395b2c415fddd1ed51f4829aeba2d4259a5` from `bounded-exec-public`, NAR `sha256-n9UZx4GlhDLShotMNBSVisIJpTrkqLYs2LtW2dcipCQ=`. The local executor source binding changes with Cargo/Nix selection; execution semantics do not.
 
 The historical `octet` input originally selected producer `2f8213a88781d9d38bb81319d06a50805d48ccd3`, not the newer Octet compiler. Its independent Slotcar export is `e0d07898aafd26a307eb4c5579dbd0e7931f991b`, NAR `sha256-UOkHaZuLrKHn0XOzwJFqiKfXEIAfsGESK7iHMyoNhro=`. The real package is `cargo-slotcar`; maintained config uses Slotcar tables with unchanged workspace/all-targets/redb-registry scope. No alias is added. Historical receipts and active unrelated work remain untouched.
